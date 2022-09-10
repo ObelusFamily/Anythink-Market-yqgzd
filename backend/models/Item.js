@@ -24,6 +24,10 @@ ItemSchema.pre("validate", function (next) {
     this.slugify();
   }
 
+  if (!this.validateImageUrl(this.image)) {
+    this.image = "placeholder.png";
+  }
+
   next();
 });
 
@@ -32,6 +36,10 @@ ItemSchema.methods.slugify = function () {
     slug(this.title) +
     "-" +
     ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+
+  this.validateImageUrl = function (image) {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(image);
+  };
 };
 
 ItemSchema.methods.updateFavoriteCount = function () {
@@ -49,7 +57,7 @@ ItemSchema.methods.toJSONFor = function (user) {
     slug: this.slug,
     title: this.title,
     description: this.description,
-    image: this.image !== "" ? this.image : "placeholder.png",
+    image: this.image,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     tagList: this.tagList,
